@@ -23,11 +23,11 @@
 
 4. Start the backend server:
    ```bash
-   npm start
+   node index.js
    ```
-   or, for development mode with auto-reload:
+   or, if nodemon is installed:
    ```bash
-   npm run dev
+   nodemon index.js
    ```
 
 ### API Endpoints
