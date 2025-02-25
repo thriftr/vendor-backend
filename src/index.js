@@ -9,7 +9,7 @@ app.use(express.json());
 app.use(cors());
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/vendor-app')
   .then(() => console.log('Connected to Database'))
   .catch(err => console.error('Database connection error:', err));
 
