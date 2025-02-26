@@ -1,0 +1,78 @@
+name: CI/CD for Vendor Backend
+
+on:
+  push:
+    branches:
+      - main     # Deploy to production + create release
+      - develop  # Deploy to staging
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build-and-test:
+    name: 🛠️ Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 📦 Install Dependencies
+        run: npm ci
+
+      # - name: 🔍 Lint Code
+      #   run: npm run lint
+
+      # - name: 🧪 Run Tests
+      #   run: npm test
+
+  deploy:
+    name: 🚀 Deploy to Railway
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Deploy to Railway
+        uses: railwayapp/railway-action@v1
+        with:
+          environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+
+  release:
+    name: 🎉 Create GitHub Release
+    needs: deploy  # Run only after successful deployment
+    if: github.ref == 'refs/heads/main'  # Only for production
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: 📌 Bump Version (Auto-increment)
+        id: version
+        uses: anothrNick/github-tag-action@1.67.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DEFAULT_BUMP: patch  # Increment patch version (v1.0.0 → v1.0.1)
+
+      - name: 📝 Generate Release Notes
+        id: release_notes
+        run: |
+          echo "## Changes in ${{ steps.version.outputs.new_tag }}" > release_notes.md
+          echo "" >> release_notes.md
+          git log --oneline $(git describe --tags --abbrev=0)..HEAD >> release_notes.md
+
+      - name: 🚀 Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.new_tag }}
+          name: Release ${{ steps.version.outputs.new_tag }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
