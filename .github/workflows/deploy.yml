@@ -48,7 +48,12 @@ jobs:
           echo "Railway CLI installed"
       - name: Verify Railway CLI Installation
         run: railway --version  # Verify that the CLI was installed successfully
-
+      - name: Authenticate with Railway (Browserless)
+        run: |
+          echo "Authenticating with Railway in a browserless environment..."
+          export RAILWAY_TOKEN=${{ secrets.RAILWAY_API_TOKEN }}
+          railway login --browserless
+          
       - name: Deploy to Railway
         run: railway up
 
