@@ -39,8 +39,8 @@ jobs:
       - name: Set up Railway CLI
         run: |
           echo "Installing Railway CLI"
-          curl -fsSL https://railway.app/cli.sh | sh
-          export PATH=$PATH:$HOME/.railway
+          echo "Installing Railway CLI..."
+          npm install -g railway
           echo "Railway CLI installed"
       - name: Verify Railway CLI Installation
         run: railway --version  # Verify that the CLI was installed successfully
