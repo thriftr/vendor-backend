@@ -24,7 +24,7 @@ jobs:
           node-version: 18
 
       - name: 📦 Install Dependencies
-        run: npm ci
+        run: npm install
 
       # - name: 🔍 Lint Code
       #   run: npm run lint
@@ -38,12 +38,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
+      - name: Set up Railway CLI
+        run: |
+          echo "Installing Railway CLI"
+          echo "Installing Railway CLI..."
+          npm install -g @railway/cli
+          echo "Railway CLI installed"
+      - name: Verify Railway CLI Installation
+        run: railway --version  # Verify that the CLI was installed successfully
+      - name: Authenticate with Railway (Browserless)
+        run: |
+          echo "Authenticating with Railway in a browserless environment..."
+          export RAILWAY_TOKEN=${{ secrets.RAILWAY_API_TOKEN }}
+          
       - name: Deploy to Railway
-        uses: railwayapp/railway-action@v1
-        with:
-          environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+        run: |
+          echo "🚀 Deploying to Railway"
+          railway up
+
+
+      # - name: Deploy to Railway
+      #   run: |
+      #     if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+      #       echo "🚀 Deploying to Production"
+      #       railway up --service ${{ secrets.RAILWAY_PROD_SERVICE_ID }}
+      #     else
+      #       echo "🛠️ Deploying to Staging"
+      #       railway up --service ${{ secrets.RAILWAY_STAGING_SERVICE_ID }}
+      #     fi
 
   release:
     name: 🎉 Create GitHub Release
