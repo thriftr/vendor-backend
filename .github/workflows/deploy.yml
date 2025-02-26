@@ -40,10 +40,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Set up Railway CLI
+        run: |
+          curl -fsSL https://railway.app/cli.sh | sh
+          export PATH=$PATH:$HOME/.railway
+
+      - name: Login to Railway
+        run: railway login --token ${{ secrets.RAILWAY_API_TOKEN }}
+
       - name: Deploy to Railway
-        uses: railwayapp/railway-action@v1
-        with:
-          environment: ${{ github.ref == 'refs/heads/main' && 'production' || 'staging' }}
+        run: |
+          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+            echo "🚀 Deploying to Production"
+            railway up --service ${{ secrets.RAILWAY_PROD_SERVICE_ID }}
+          else
+            echo "🛠️ Deploying to Staging"
+            railway up --service ${{ secrets.RAILWAY_STAGING_SERVICE_ID }}
+          fi
 
   release:
     name: 🎉 Create GitHub Release
