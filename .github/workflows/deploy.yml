@@ -40,7 +40,7 @@ jobs:
         run: |
           echo "Installing Railway CLI"
           echo "Installing Railway CLI..."
-          npm install -g railway
+          npm install -g @railway/cli
           echo "Railway CLI installed"
       - name: Verify Railway CLI Installation
         run: railway --version  # Verify that the CLI was installed successfully
