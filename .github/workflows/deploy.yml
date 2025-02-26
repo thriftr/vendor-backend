@@ -1,10 +1,6 @@
 name: CI/CD for Vendor Backend
 
 on:
-  push:
-    branches:
-      - main     # Deploy to production + create release
-      - develop  # Deploy to staging
   pull_request:
     branches:
       - main
@@ -38,25 +34,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Railway CLI
         run: |
+          echo "Installing Railway CLI"
           curl -fsSL https://railway.app/cli.sh | sh
           export PATH=$PATH:$HOME/.railway
+          echo "Railway CLI installed"
+      - name: Verify Railway CLI Installation
+        run: railway --version  # Verify that the CLI was installed successfully
 
       - name: Login to Railway
         run: railway login --token ${{ secrets.RAILWAY_API_TOKEN }}
 
-      - name: Deploy to Railway
-        run: |
-          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
-            echo "🚀 Deploying to Production"
-            railway up --service ${{ secrets.RAILWAY_PROD_SERVICE_ID }}
-          else
-            echo "🛠️ Deploying to Staging"
-            railway up --service ${{ secrets.RAILWAY_STAGING_SERVICE_ID }}
-          fi
+      # - name: Deploy to Railway
+      #   run: |
+      #     if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+      #       echo "🚀 Deploying to Production"
+      #       railway up --service ${{ secrets.RAILWAY_PROD_SERVICE_ID }}
+      #     else
+      #       echo "🛠️ Deploying to Staging"
+      #       railway up --service ${{ secrets.RAILWAY_STAGING_SERVICE_ID }}
+      #     fi
 
   release:
     name: 🎉 Create GitHub Release
