@@ -27,12 +27,13 @@
    ```
 
 ### API Endpoints
+- **Host:** `https://vendor-backend-production.up.railway.app`
 
 #### Register a Vendor
 - **Endpoint:** `POST /register`
 - **Request:**
   ```bash
-  curl -X POST http://localhost:5001/register \
+  curl -X POST https://vendor-backend-production.up.railway.app/register \
        -H "Content-Type: application/json" \
        -d "{\"name\": \"Meghraj Doe\", \"phone\": \"8765785686\", \"email\": \"meg_john@example.com\", \"storeName\": \"Meghraj's Store\", \"panCard\": \"ABCDE1278634F\", \"employerId\": \"EMP123467785\", \"gstin\": \"22AAAAA0065760A1Z5\"}"
   ```
@@ -59,7 +60,7 @@
 - **Endpoint:** `GET /vendor/{vendorId}`
 - **Request:**
   ```bash
-  curl -X GET http://localhost:5001/vendor/67be1f95c9787ffd13d1eb2d \
+  curl -X GET https://vendor-backend-production.up.railway.app/vendor/67be1e29c9787ffd13d1eb2a \
        -H "Content-Type: application/json"
   ```
 - **Expected Response:**
